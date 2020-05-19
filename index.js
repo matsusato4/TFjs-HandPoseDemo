@@ -6,7 +6,8 @@ async function setupCam(){
         const cam = await navigator.mediaDevices.getUserMedia({
             "audio": false,
             "video": {
-                facingMode: "user"
+                facingMode: "user",
+                
             },
         })
         video.srcObject = cam;
@@ -32,7 +33,13 @@ async function loadCam(){
 
 async function main() {
     const model = await handpose.load();
-    const video = await loadCam()
+    try {
+        const video = await loadCam()
+    } catch (err) {
+        console.error(err);
+        alert(err);
+        return;
+    }
 
     async function frameEstimateHands (){
         const predictions = await model.estimateHands(video);
