@@ -1,6 +1,7 @@
 var CACHE_NAME = "TFjs-HandPoseDemo-PWA";
 var urlsToCache = [
-    "/",
+    "/index.html",
+    "index.js"
 ];
 
 self.addEventListener('install', function(event) {
