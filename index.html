@@ -11,11 +11,11 @@
                 vertical-align: top;
             }
         </style>
-        <link rel="manifest" crossorigin="use-credentials" href="manifest.json">
+        <link rel="manifest" crossorigin="use-credentials" href="/manifest.webmanifest">
         <script>
             window.addEventListener("load", function() {
                 if("serviceWorker" in navigator) {
-                    navigator.serviceWorker.register("service_worker.js").then(function(reg){
+                    navigator.serviceWorker.register("/service_worker.js").then(function(reg){
                         console.log("Service worker registed.", reg);
                     }).catch(function(err){
                         console.error("Service worker error.", err);
