@@ -9,7 +9,8 @@ async function setupCam(){
             "audio": false,
             "video": {
                 facingMode: "user",
-
+                width: "",
+                height: "",
             },
         })
         video.srcObject = cam;
@@ -34,7 +35,7 @@ async function loadCam(){
 }
 
 async function main() {
-    tf.setBackend("webgl");
+    // tf.setBackend("webgl");
     const model = await handpose.load();
     try {
         const video = await loadCam()
@@ -46,7 +47,7 @@ async function main() {
     }
 
     const stats = new Stats();
-    stats.showPannel(0);
+    stats.showPanel(0);
     document.body.appendChild(stats.dom);
 
     async function frameEstimateHands (){

@@ -11,13 +11,18 @@
                 vertical-align: top;
             }
         </style>
+        <link rel="manifest" href="manifest.json">
+        <script>
+            if("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("service_worker.js").then((reg) => {
+                    console.log("Service worker registered.", reg);
+                });
+            }
+        </script>
     </head>
     <body>
-        <div id="info" style="display:none"></div>
-        <div id="canvas">
-            <canvas id="bone-canvas"></canvas>
-            <video id="video" playsinline style="-webkit-transform: scaleX(-1); transform: scaleX(-1); width: auto; height: auto; position: absolute;"></video>
-        </div>
+        <canvas id="bone-canvas" style="position: absolute"></canvas>
+        <video id="video" playsinline style="-webkit-transform: scaleX(-1); transform: scaleX(-1); width: auto; height: auto; position: absolute;"></video>
         <script src="index.js"></script>
     </body>
 </html>
