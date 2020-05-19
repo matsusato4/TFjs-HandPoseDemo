@@ -1,4 +1,6 @@
-const handpose = require('@tensorflow-models/handpose');
+import * as handpose from "@tensorflow-models/handpose";
+import * as tf from "@tensorflow/tfjs-core";
+import Stats from "stats-js";
 
 async function setupCam(){
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
@@ -7,7 +9,7 @@ async function setupCam(){
             "audio": false,
             "video": {
                 facingMode: "user",
-                
+
             },
         })
         video.srcObject = cam;
@@ -32,16 +34,23 @@ async function loadCam(){
 }
 
 async function main() {
+    tf.setBackend("webgl");
     const model = await handpose.load();
     try {
         const video = await loadCam()
     } catch (err) {
         console.error(err);
-        alert(err);
+        const errMessage = "ビデオデバイスが見つかりませんでした。\nお使いのブラウザは対応していないか、カメラへのアクセス許可がありません。"
+        alert(errMessage);
         return;
     }
 
+    const stats = new Stats();
+    stats.showPannel(0);
+    document.body.appendChild(stats.dom);
+
     async function frameEstimateHands (){
+        stats.begin();
         const predictions = await model.estimateHands(video);
         if (predictions.length > 0) {
             for (let i = 0; i < predictions.length; i++) {
@@ -53,6 +62,7 @@ async function main() {
                 }
             }
         }
+        stats.end();
         requestAnimationFrame(frameEstimateHands);
     }
 
