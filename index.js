@@ -2,15 +2,17 @@ import * as handpose from "@tensorflow-models/handpose";
 import * as tf from "@tensorflow/tfjs-core";
 import Stats from "stats-js";
 
-async function setupCam(){
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+var fps = 24.0;
+
+
+async function setupCam() {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const video = document.getElementById("video");
         const cam = await navigator.mediaDevices.getUserMedia({
             "audio": false,
             "video": {
                 facingMode: "user",
-                width: "",
-                height: "",
+                frameRate: fps,
             },
         })
         video.srcObject = cam;
@@ -28,7 +30,7 @@ async function setupCam(){
     }
 }
 
-async function loadCam(){
+async function loadCam() {
     const video = await setupCam();
     video.play();
     return video;
@@ -49,24 +51,32 @@ async function main() {
     const stats = new Stats();
     stats.showPanel(0);
     document.body.appendChild(stats.dom);
-
-    async function frameEstimateHands (){
+    let flame = 0;
+    let count = 0;
+    async function frameEstimateHands() {
+        requestAnimationFrame(frameEstimateHands);
+        
+        //10fpsに制限
+        flame++;
+        if (flame % 6 != 0)
+            return;
+        
         stats.begin();
         const predictions = await model.estimateHands(video);
         if (predictions.length > 0) {
             for (let i = 0; i < predictions.length; i++) {
-                const keypoints = predictions[i].landmarks;
-    
-                for (let i = 0; i < keypoints.length; i++) {
-                    const [x, y, z] = keypoints[i];
-                    console.log(`Keypoint ${i}: [${x}, ${y}, ${z}]`);
-                }
+                count++;
+                console.log(count);
+            //     const keypoints = predictions[i].landmarks;
+
+            //     for (let i = 0; i < keypoints.length; i++) {
+            //         const [x, y, z] = keypoints[i];
+            //         console.log(`Keypoint ${i}: [${x}, ${y}, ${z}]`);
+            //     }
             }
         }
         stats.end();
-        requestAnimationFrame(frameEstimateHands);
     }
-
     frameEstimateHands()
 }
 main();
