@@ -39,7 +39,7 @@ async function loadCam() {
 }
 
 async function main() {
-    // tf.setBackend("webgl");
+    tf.setBackend("webgl");
     const model = await handpose.load();
     try {
         const video = await loadCam()
