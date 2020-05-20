@@ -73,9 +73,9 @@ async function main() {
 
     async function frameEstimateHands() {
         requestAnimationFrame(frameEstimateHands);
-        //10fpsに制限
+        //20fpsに制限
         flame++;
-        if (flame % 6 != 0)
+        if (flame % 3 != 0)
             return;
         stats.begin();
 
