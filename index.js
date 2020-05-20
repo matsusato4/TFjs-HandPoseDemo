@@ -3,7 +3,7 @@ import * as tf from "@tensorflow/tfjs-core";
 import Stats from "stats-js";
 
 var fps = 24.0;
-
+let videoWidth, videoHeight;
 
 async function setupCam() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -13,6 +13,8 @@ async function setupCam() {
             "video": {
                 facingMode: "user",
                 frameRate: fps,
+                width: 640,
+                height: 480,
             },
         })
         video.srcObject = cam;
@@ -53,30 +55,61 @@ async function main() {
     document.body.appendChild(stats.dom);
     let flame = 0;
     let count = 0;
+    
+    videoWidth = video.videoWidth;
+    videoHeight = video.videoHeight;
+    const canvas = document.getElementById('bone-canvas');
+    canvas.width = videoWidth;
+    canvas.height = videoHeight;
+    const ctx = canvas.getContext('2d');
+    video.width = videoWidth;
+    video.height = videoHeight;
+
+    ctx.clearRect(0, 0, videoWidth, videoHeight);
+    ctx.strokeStyle = 'red';
+    ctx.fillStyle = 'red';
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+
     async function frameEstimateHands() {
         requestAnimationFrame(frameEstimateHands);
-        
         //10fpsに制限
         flame++;
         if (flame % 6 != 0)
             return;
-        
         stats.begin();
+
+        ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
+
         const predictions = await model.estimateHands(video);
         if (predictions.length > 0) {
             for (let i = 0; i < predictions.length; i++) {
+                drawKeypoints(ctx, predictions[i].landmarks);
                 count++;
                 console.log(count);
-            //     const keypoints = predictions[i].landmarks;
+                const keypoints = predictions[i].landmarks;
 
-            //     for (let i = 0; i < keypoints.length; i++) {
-            //         const [x, y, z] = keypoints[i];
-            //         console.log(`Keypoint ${i}: [${x}, ${y}, ${z}]`);
-            //     }
+                for (let i = 0; i < keypoints.length; i++) {
+                    const [x, y, z] = keypoints[i];
+                    console.log(`Keypoint ${i}: [${x}, ${y}, ${z}]`);
+                }
             }
         }
         stats.end();
     }
     frameEstimateHands()
+}
+
+function drawKeypoints(ctx, points) {
+    const keypoints = points;
+  
+    for (let i = 0; i < keypoints.length; i++) {
+        const y = keypoints[i][0];
+        const x = keypoints[i][1];
+      
+        ctx.beginPath();
+        ctx.arc(y, x, 3, 0, 2 * Math.PI);
+        ctx.fill();
+    }
 }
 main();
