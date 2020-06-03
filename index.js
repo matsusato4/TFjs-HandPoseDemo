@@ -2,7 +2,7 @@ import * as handpose from "@tensorflow-models/handpose";
 import * as tf from "@tensorflow/tfjs-core";
 import Stats from "stats-js";
 
-var fps = 24.0;
+var fps = 60.0;
 let videoWidth, videoHeight;
 
 async function setupCam() {
@@ -66,7 +66,8 @@ async function main() {
     video.height = videoHeight;
 
     ctx.clearRect(0, 0, videoWidth, videoHeight);
-    ctx.strokeStyle = 'red';
+    ctx.strokeStyle = 'green';
+    ctx.lineWidth = 3;
     ctx.fillStyle = 'red';
     ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
@@ -101,15 +102,36 @@ async function main() {
 }
 
 function drawKeypoints(ctx, points) {
-    const keypoints = points;
+    const p = points;
+    ctx.strokeStyle = 'red'
+    for (let i = 0; i < 5; i++) {
+        drawline(ctx, [p[4*i+1], p[4*i+2], p[4*i+3], p[4*i+4]], false);
+    }
+    ctx.strokeStyle = 'green'
+    drawline(ctx, [p[0], p[1], p[5], p[9], p[13], p[17]], true);
   
-    for (let i = 0; i < keypoints.length; i++) {
-        const y = keypoints[i][0];
-        const x = keypoints[i][1];
+    for (let i = 0; i < p.length; i++) {
+        const y = p[i][0];
+        const x = p[i][1];
       
         ctx.beginPath();
-        ctx.arc(y, x, 3, 0, 2 * Math.PI);
+        ctx.arc(y, x, 5, 0, 2 * Math.PI);
         ctx.fill();
     }
+    
+}
+
+function drawline(ctx, points, close) {
+    const line = new Path2D();
+    
+    line.moveTo(points[0][0], points[0][1]);
+    for (let i = 1; i < points.length; i++) {
+        const point = points[i];
+        line.lineTo(point[0], point[1]);
+    }
+    if (close) {
+        line.closePath();
+    }
+    ctx.stroke(line);
 }
 main();
