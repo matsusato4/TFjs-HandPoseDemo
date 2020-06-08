@@ -74,10 +74,6 @@ async function main() {
 
     async function frameEstimateHands() {
         requestAnimationFrame(frameEstimateHands);
-        //20fpsに制限
-        flame++;
-        if (flame % 3 != 0)
-            return;
         stats.begin();
 
         ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
